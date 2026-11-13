@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Élő festmény – hogyan készült</title>
+<meta name="description" content="Hogyan lesz Csontváry Kosztka Tivadar Vihar a Nagy Hortobágyon című festményéből bejárható, szekérrel járható világ: kutatás, stíluselemzés és a festő-motor technikája, a háttérben élőben futó motorral." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/site.css" />
+</head>
+<body>
+
+<div id="stage"><iframe id="engine" src="jatek/?embed" title="Az élő festmény motorja" tabindex="-1" aria-hidden="true"></iframe></div>
+<div id="loader"><span class="dot"></span><span>keverem a festéket… (a motor töltődik)</span></div>
+
+<main>
+
+<!-- ======================================================================= the opening -->
+<section class="chapter hero" data-pose='{"pos":[0,3.2,0],"look":[0,-0.41,-50],"fov":37,"sway":0.15}' data-look='{"scan":1,"clear":0}'>
+  <p class="kicker">Csontváry Kosztka Tivadar · Vihar a Nagy Hortobágyon · 1903</p>
+  <h1>Élő festmény</h1>
+  <p class="lead">Hogyan lesz egy festményből bejárható, szekérrel járható világ. A háttérben most is a játék motorja fut: görgess, és a kamera fejezetről fejezetre oda repül, amiről szó van.</p>
+  <label class="slider"><span>festmény</span><input id="scan" type="range" min="0" max="100" value="100" aria-label="A festmény és az élő világ közti átmenet" /><span>élő világ</span></label>
+</section>
+
+<!-- ======================================================================= I -->
+<section class="chapter" data-pose='{"pos":[0,3.2,0],"look":[0,-0.41,-50],"fov":40,"sway":0.6}' data-look='{"scan":0}'>
+  <article class="label">
+    <p class="num">I. fejezet</p>
+    <h2>Egy festő, egy kéz</h2>
+    <p>Az ötlet a <em>Starry Nightrider</em>-ből jött, ahol Van Gogh <em>Csillagos éj</em>ének falujában lehet biciklizni. Letöltöttük és szétszedtük a játék fájljait. Kiderült, hogy nincs benne Gauss-splat: a világ egyszerű, kódból épített geometria, és szinte minden hatást egyetlen nagy ecsetvonás-shader ad.</p>
+    <p>A mi változatunk magyar festményre épül. Már az elején eldőlt a legfontosabb szabály: <b>csak Csontváry</b>. Más festők stílusa nem keveredhet a világba, és Csontváryt sem festjük más kezével, vagyis nincs Van Gogh-örvény az égen.</p>
+    <h3>Miért three.js?</h3>
+    <ul>
+      <li><b>Gauss-splat (Idol):</b> egy képből egyetlen tárgyat ad, a fény bele van égetve, és nem lehet egész tájat építeni belőle.</li>
+      <li><b>Helios</b> (saját UE5-szerű Rust/WebGPU motor): fotorealisztikus képalkotásra készült, egy festményhez túl sok, és a shaderek fordítása percekig is eltarthat.</li>
+      <li><b>three.js r187, WebGL2, build lépés nélkül:</b> ugyanaz a felépítés, ami a Van Gogh-játékban is bevált. A festői hatás teljes egészében saját shaderekből jön.</li>
+    </ul>
+  </article>
+</section>
+
+<!-- ======================================================================= II -->
+<section class="chapter" data-pose='{"pos":[1.5,2.4,-1],"look":[-1.5,1,-9],"fov":45,"sway":0.4}' data-look='{"scan":0}'>
+  <article class="label wide">
+    <p class="num">II. fejezet</p>
+    <h2>A festmény közelről</h2>
+    <p>Mielőtt bármit megfestettünk, közelről átnéztük a szkennelést (3429 × 1755 képpont). Ezek a megfigyelések lettek a motor szabályai.</p>
+    <div class="plates">
+      <figure class="plate"><img src="img/reszlet_cattle_near.jpg" alt="A szürke marhák a festmény előterében" loading="lazy" /><figcaption><b>Impasztó csak a fehéren.</b> A marhák szőre szemcsés, vastagon felrakott fehér festék, a sötét víz vékony, és átüt rajta a vászon.</figcaption></figure>
+      <figure class="plate"><img src="img/reszlet_water_refl.jpg" alt="Az itató marhák tükörképe" loading="lazy" /><figcaption><b>A tükörkép függőlegesen elkenődik.</b> Áttetsző, szellemszerű, a víz szinte mozdulatlan.</figcaption></figure>
+      <figure class="plate"><img src="img/reszlet_sky_storm.jpg" alt="A viharfal" loading="lazy" /><figcaption><b>Nincs ecsetfolt-minta az égen.</b> Nedvesen egymásba dolgozott tömegek, rongyos, szárazecsetes szélekkel.</figcaption></figure>
+      <figure class="plate"><img src="img/reszlet_plain_far.jpg" alt="A távoli puszta a gulyával és a csikósokkal" loading="lazy" /><figcaption><b>A puszta vízszintes, puha sávokból áll.</b> A távol nem szürkül el, inkább világít.</figcaption></figure>
+      <figure class="plate"><img src="img/reszlet_bridge.jpg" alt="A Kilenclyukú híd ívei" loading="lazy" /><figcaption><b>A híd</b> lazacrózsaszín, száraz vízszintes húzásokkal. Az ívek belsejében narancsbarna izzás van, a pilléreken mohazöld.</figcaption></figure>
+      <figure class="plate"><img src="img/reszlet_herdsman.jpg" alt="A pásztor a bal alsó sarokban" loading="lazy" /><figcaption><b>Naiv, lapos alakok.</b> Egytónusú test, amely csak a széle felé sötétedik. Kerek, piros arc. Vetett árnyék nincs.</figcaption></figure>
+    </div>
+    <p class="small">Közös szín- és tónusszabályok: sötét előtér-sáv keretez alul, a középső sík világít, az ég kettéválik (hideg vihar balra, meleg derülés jobbra). Egymás mellett komplementer párok állnak: rózsaszín híd a zöld mohával, kék vihar a narancs éggel, fehér marha a kékesfekete vízzel.</p>
+  </article>
+</section>
+
+<!-- ======================================================================= III -->
+<section class="chapter" data-pose='{"pos":[-12,4,10],"look":[0,1,-30],"fov":50,"sway":1}' data-look='{"scan":0}'>
+  <article class="label">
+    <p class="num">III. fejezet</p>
+    <h2>Amit a szakértők mondanak</h2>
+    <p>A Szépművészeti Múzeum <em>Csontváry 170</em> kiállításáról tizenhárom videót néztünk át. Kilencnek volt felirata. A 66 perces kerekasztal-beszélgetésnek nem volt, ezért helyben, Whisperrel (<code>large-v3</code>, magyar nyelv) átírtuk egy RTX 3090-en.</p>
+    <blockquote>„A festésmód nem egyenletes, hanem néhány helyen nagyon vastag.”<cite>Szűcs György · kerekasztal, 0:39:59</cite></blockquote>
+    <blockquote>„…szinte érezte az ember azt a technikát, amivel megküzdött a vászonnal, a festékrétegeket, a színeket, ahogy egymásra tette.”<cite>Gergely Mariann, a kiállítás kurátora · 0:08:20</cite></blockquote>
+    <blockquote>Az üres vásznat sem fehérnek festi, hanem „a sárga, a kék és a zöld árnyalataiban”.<cite>Bellák Gábor · Beszédes önarckép</cite></blockquote>
+    <p>A vihart a Hortobágyról tartott diaképes előadás alapján festette meg. Levélben kérdezte meg a fényképészt, melyek a táj „legkarakteresebb motívumai”. A nagy vásznakat valószínűleg műteremben festette, vázlat, fénykép és helyszíni élmény alapján.</p>
+    <blockquote>„Nincs csontvári kód.” · „Nem képrejtvényeket festett.”<cite>Szűcs György 0:45:23 · Bellák Gábor 0:43:30</cite></blockquote>
+    <p class="small">Egy tanulmány a <em>Vihar</em>ban rejtett Toldi-történetet és állatövet lát. A szakma az ilyen „megfejtéseket” félrevezetőnek tartja, ezért a játék nem épül rájuk.</p>
+  </article>
+</section>
+
+<!-- ======================================================================= IV -->
+<section class="chapter" data-pose='{"pos":[30,13,-30],"look":[30,22,-130],"fov":60,"sway":1.5}' data-look='{"scan":0,"clear":0}'>
+  <article class="label wide">
+    <p class="num">IV. fejezet</p>
+    <h2>Az ég: a festmény kupolája</h2>
+    <p>Az égbolt maga a festmény: egy kupolára vetítjük, pontosan onnan nézve, ahonnan a festő nézett (66° látószög, a horizont a kép 39%-ánál). Hogy a 3D híd és a lovasok kétszer ne látszódjanak, az égből kiretusáltuk a hidat, a lovasokat és a gémeskutakat. A retust egy képszerkesztő modell készítette (<code>gpt-image-2.6</code> edit, medium minőség), de csak a maszkolt égrészt használjuk fel belőle. Minden más Csontváry saját festéke.</p>
+    <div class="plates two">
+      <figure class="plate"><img src="img/festmeny.jpg" alt="A festmény szkennelése" loading="lazy" /><figcaption><b>Az eredeti</b> szkennelés (Wikimedia Commons, közkincs).</figcaption></figure>
+      <figure class="plate"><img src="img/eg_retus.jpg" alt="Az ég a híd és a lovasok nélkül" loading="lazy" /><figcaption><b>Az ég önmagában:</b> a viharfal és a naplemente híd nélkül fut le a horizontig.</figcaption></figure>
+    </div>
+    <p>A kupola többi részét a festmény saját színei töltik ki: nyugaton a viharfal folytatódik, keleten a narancs derülés, a hátunk mögött ibolyás alkony. A vászon széles, felhő alakú, szabálytalan sávban, egyre elmosottabban olvad bele a kupolába, így sehol nem látszik a kép széle. A viharban villámok csapnak le, a mennydörgés pár másodperc késéssel érkezik.</p>
+    <div class="switches"><button class="switch" data-toggle="clear" aria-pressed="false">A vihar elvonul (napút)</button></div>
+    <p class="hint">Játék közben minden leadott napfénycsepp kicsit hátrébb szorítja a vihart.</p>
+  </article>
+</section>
+
+<!-- ======================================================================= V -->
+<section class="chapter" data-pose='{"pos":[0,3.2,0],"look":[0,-0.41,-50],"fov":37,"sway":0.1}' data-look='{"scan":0.5}'>
+  <article class="label">
+    <p class="num">V. fejezet</p>
+    <h2>Belépés a festménybe</h2>
+    <p>A játék egy galériában kezdődik: a festmény aranykeretben lóg a falon. Belépéskor a kép kitölti a képernyőt, és egy lassú, nedves festékfront vonul át rajta, amely mögött már az élő világ látszik.</p>
+    <p>Az előtér alakjait a festmény képpontjaiból számoltuk vissza a talajra: a nagy ökröt balra, a borjas tehenet, a jobb oldali ökröt, a komondort és a pásztort. Mindegyik ott áll, és arra néz, ahol a festményen, ezért az átmenet közben a festett és a 3D alakok nagyjából fedik egymást.</p>
+    <p class="hint">Húzd a fenti csúszkát, vagy figyeld a hátteret: most félúton jár az átmenet.</p>
+  </article>
+</section>
+
+<!-- ======================================================================= VI -->
+<section class="chapter" data-pose='{"pos":[10,3.2,20],"look":[-6,0,-6],"fov":55,"sway":1}' data-look='{"scan":0,"brush":1}'>
+  <article class="label">
+    <p class="num">VI. fejezet</p>
+    <h2>Az ecset</h2>
+    <p>A világ minden felületét ugyanaz a kéz festi: két réteg ecsetvonás, mindegyik a tárgy saját színével, a festményről mért palettán tónusozva. A vonások iránya a felülettől függ:</p>
+    <ul>
+      <li>a pusztán hosszú, vízszintes, ahogy ő festette a síkságot;</li>
+      <li>a háztetőn a lejtővel fut, a falakon vízszintes;</li>
+      <li>a fatörzsön függőleges, az állat testén hosszanti.</li>
+    </ul>
+    <p>A vonások mérete a vásznon állandó. Minden mérethez rögzített minta tartozik, és ahogy a felület távolodik, a minták egymásba úsznak. A távoli puszta végül puha, világító színsávokká olvad.</p>
+    <p>Maguk a vonások egy kódból generált <b>ecsetlapról</b> jönnek. Nyolc nyomot tartalmaz: hosszú húzást, rövid, kerek nyomást és ívelt vonást. Mindegyikben benne van a festék vastagsága, a határa és egy második szín csíkja. Az ötlet az „Oil paint” nyílt projektből jön (MIT), de Csontváry vékony festékéhez laposabbra vettük.</p>
+    <canvas id="brushsheet" width="512" height="512" aria-label="Az ecsetlap nyolc nyoma"></canvas>
+    <p class="small">A vonás: a festék helye világos, a vastagsága melegebb, a második szín csíkja kékes.</p>
+    <div class="switches"><button class="switch" data-toggle="brush" aria-pressed="true">Ecsetlap</button></div>
+  </article>
+</section>
+
+<!-- ======================================================================= VII -->
+<section class="chapter" data-pose='{"pos":[76,7,22],"look":[30,3,-52],"fov":50,"sway":1.2}' data-look='{"scan":0,"paint3":1,"shadow":0.32}'>
+  <article class="label">
+    <p class="num">VII. fejezet</p>
+    <h2>Szín, nem fény</h2>
+    <p>Minden tárgyat három keverékből festünk: <b>fény</b>, <b>féltónus</b> és <b>árnyék</b>. Minden vonás a megvilágítása szerint választ közülük, a határ vonásról vonásra kicsit máshová esik. Így a fény egész festékfoltokban törik, nem sima 3D-s átmenetben. Pontosan ilyenek Csontváry naiv, egytónusú zónái.</p>
+    <ul>
+      <li><b>Az árnyék hideg:</b> kékes-ibolyás, mert az eget és a vizet tükrözi.</li>
+      <li><b>Nincs semleges fehér.</b> A napos fehér sárgás, az árnyékos kékes-zöldes.</li>
+      <li><b>A vetett árnyékból csak nyom marad</b> (32%), mert a festményen nincs vetett árnyék. Azt is minden vonás egészben, a saját közepén veszi fel, így az árnyék széle rongyos, egész foltokból áll.</li>
+    </ul>
+    <div class="switches">
+      <button class="switch" data-toggle="paint3" aria-pressed="true">Három keverék</button>
+      <button class="switch" data-toggle="shadowfull" aria-pressed="false">Teljes vetett árnyék</button>
+    </div>
+    <p class="hint">Kapcsold ki a három keveréket, és a híd azonnal számítógépesebb lesz.</p>
+  </article>
+</section>
+
+<!-- ======================================================================= VIII -->
+<section class="chapter" data-pose='{"pos":[-14,3.4,-18],"look":[-24,0.8,-34],"fov":50,"sway":0.8}' data-look='{"scan":0,"oil":1,"weave":1}'>
+  <article class="label">
+    <p class="num">VIII. fejezet</p>
+    <h2>Az olajszűrő és a vászon</h2>
+    <p>A kész képen még egy sor festői lépés fut végig:</p>
+    <ul>
+      <li><b>Olajfesték-szűrő</b> (általánosított Kuwahara, nyolc szektor): a 3D tárgyakat sima, festett foltokká olvasztja. Ettől lesznek a festmény részei, és nem tárgyak előtte.</li>
+      <li><b>Kézremegés:</b> minden él kicsit hullámzik, mint egy ecsettel húzott vonal.</li>
+      <li><b>Egyenetlen festékdomborulat:</b> a világos, vastag részeken erős, a sötét, vékony részeken gyenge.</li>
+      <li><b>Körvonal:</b> ahol a mélység megtörik, ott nem vonal, hanem sötétebb szélsáv jelenik meg.</li>
+      <li><b>Vászonszövés:</b> a vékony festéken átüt, a vastagon alig.</li>
+      <li><b>Sötét előtér-sáv</b> alul, ahogy a festményt is keretezi.</li>
+      <li><b>Matt felület, lakk nélkül:</b> a legvilágosabb részek a festék fehérjéig futnak ki, de soha nem túl rajta; a sötétek nem mélyülnek, inkább kicsit krétásak (lásd a XV. fejezetet).</li>
+    </ul>
+    <div class="switches">
+      <button class="switch" data-toggle="oil" aria-pressed="true">Olajszűrő</button>
+      <button class="switch" data-toggle="weave" aria-pressed="true">Vászon</button>
+    </div>
+  </article>
+</section>
+
+<!-- ======================================================================= IX -->
+<section class="chapter" data-pose='{"pos":[-17,2.3,-25],"look":[-23,0.9,-32],"fov":45,"sway":0.5}' data-look='{"scan":0,"dabs":1}'>
+  <article class="label">
+    <p class="num">IX. fejezet</p>
+    <h2>Az állatok</h2>
+    <p>A lovak, a marhák és a kutya csontvázzal animált, szabad licencű (CC0) modellek: Quaternius, <em>Ultimate Animated Animals</em>. Mindegyiket a festmény színeire festettük át.</p>
+    <ul>
+      <li><b>A szürke marhák</b> lírás szarvat kaptak a fejcsontjukra. Legelnek, isznak, sétálnak, és kitérnek a szekér elől.</li>
+      <li><b>A lovak</b> Csontváry lovaihoz igazodnak: karcsúbbak és kicsit magasabbak a modellnél. A sebességtől függően lépnek, ügetnek vagy vágtáznak.</li>
+    </ul>
+    <p>A hozzánk legközelebbi kilenc állat bőrére 140–320 festékfolt van tűzve. A foltok a csontokkal együtt mozognak: a testen hosszanti, a lábakon lefelé futó vonások. Csak ott jelennek meg, ahol a bőr felénk néz, így a sziluett tiszta marad.</p>
+    <div class="switches"><button class="switch" data-toggle="dabs" aria-pressed="true">Festékfoltok a bőrön</button></div>
+  </article>
+</section>
+
+<!-- ======================================================================= X -->
+<section class="chapter" data-pose='{"pos":[-104,5,36],"look":[-122,1.5,18],"fov":48,"sway":0.8}' data-look='{"scan":0}'>
+  <article class="label wide">
+    <p class="num">X. fejezet</p>
+    <h2>Emberek és lovasok</h2>
+    <p>A pásztor a festmény szerint kerek, piros arcú, fekete bajszú, széles kalapú, és hosszú pipát tart. A pusztán csikósok vágtáznak a ménes körül. A cédrus körül zarándokmenet halad lépésben, ahogy a <em>Zarándoklás a cédrusokhoz</em> képen. A kis kőhídon lovas társaság kel át, a tóparton lovasok sétálnak, köztük két kék ruhás, széles kalapos hölgy. A vásárban, a csárda tornácán és a parton is vannak emberek.</p>
+    <div class="plates">
+      <figure class="plate"><img src="img/reszlet_setalovaglas_lovak.jpg" alt="Lovasok a Tengerparti sétalovaglás című képen" loading="lazy" /><figcaption><b>Tengerparti sétalovaglás</b> (1909): karcsú, kis fejű, hosszú lábú lovak.</figcaption></figure>
+      <figure class="plate"><img src="img/kep2_bridge.jpg" alt="Hídon átvonuló társaság" loading="lazy" /><figcaption><b>Hídon átvonuló társaság:</b> a játékban ez a kis kőhíd a patak fölött.</figcaption></figure>
+      <figure class="plate"><img src="img/jatek_company.jpg" alt="A lovas társaság a játékban" loading="lazy" /><figcaption><b>A játékban:</b> a társaság oda-vissza kel át a hídon.</figcaption></figure>
+    </div>
+  </article>
+</section>
+
+<!-- ======================================================================= XI -->
+<section class="chapter" data-pose='{"pos":[40,330,330],"look":[20,0,-90],"fov":55,"sway":4}' data-look='{"scan":0}'>
+  <article class="label wide">
+    <p class="num">XI. fejezet</p>
+    <h2>A világ: tizenkét festmény egy tájban</h2>
+    <p>Csontváry ismert képeiből (a Wikipédia listáján 102 szerepel) tizenkettő épül be a világba. Egy közös, álomszerű földrajzban állnak, egymáshoz közel, hogy ne üres tájon kelljen szekerezni. A festmény saját látószögébe, észak felé csak az kerülhet, ami a képen is rajta van.</p>
+    <canvas id="bigmap" width="900" height="900" aria-label="A világ térképe, a kiindulóponttól a gémeskúthoz vezető úttal"></canvas>
+    <div class="legend"><span style="--c:#1f6f78">víz</span><span style="--c:#cbb27a">utak</span><span style="--c:#c08a72">hidak</span><span style="--c:#ffd884">útvonal az úthálózaton (a gémeskúthoz)</span></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Festmény</th><th>Hol van a játékban</th></tr></thead>
+      <tbody>
+        <tr><td><em>Vihar a Nagy Hortobágyon</em> (1903)</td><td>A világ közepe: az ég, a Kilenclyukú híd, a folyó, a gulya, a pásztor, a gémeskutak</td></tr>
+        <tr><td><em>Római híd Mosztárban</em> (1903)</td><td>Mostar szurdoka, az egyívű kőhíd, fehér házak, torony, minaret</td></tr>
+        <tr><td><em>Tavasz Mosztárban</em> (1903)</td><td>Virágzó fák Mostar házai között</td></tr>
+        <tr><td><em>Jajcei vízesés</em> (1903)</td><td>Vízesés a szurdok falán, fölötte a villanytelep</td></tr>
+        <tr><td><em>Villanyvilágított fák Jajcéban</em> (1903)</td><td>A Mostarba vezető út lámpasora, sárgászöldre világított fák</td></tr>
+        <tr><td><em>A magányos cédrus</em> (1907)</td><td>A cédrus a dombtetőn, alatta a türkiz tó</td></tr>
+        <tr><td><em>Zarándoklás a cédrusokhoz</em> (1907)</td><td>Lovas zarándokmenet a domb körül</td></tr>
+        <tr><td><em>Sétalovaglás a tengerparton</em> (1909)</td><td>Lovasok a tóparti sétányon</td></tr>
+        <tr><td><em>Halászat Castellammaréban</em> (1901)</td><td>Parti fal, lámpasor, halászok, lámpás csónakok, magas parti házak</td></tr>
+        <tr><td><em>Hídon átvonuló társaság</em> (1901 k.)</td><td>A patak kis kőhídja és a lovas társaság</td></tr>
+        <tr><td><em>Vihar a pusztán</em> (1890-es évek)</td><td>Megállt ponyvás szekér, legelő lovak, pihenő utasok</td></tr>
+        <tr><td><em>Mandulavirágzás</em> (1901–02)</td><td>Mandulás kőfalas teraszokkal a déli kunhalom körül</td></tr>
+      </tbody>
+    </table></div>
+    <div class="plates">
+      <figure class="plate"><img src="img/kep_mostar.jpg" alt="Római híd Mosztárban" loading="lazy" /><figcaption><b>Római híd Mosztárban</b></figcaption></figure>
+      <figure class="plate"><img src="img/kep_cedar.jpg" alt="A magányos cédrus" loading="lazy" /><figcaption><b>A magányos cédrus</b></figcaption></figure>
+      <figure class="plate"><img src="img/kep2_jajcefall.jpg" alt="Jajcei vízesés" loading="lazy" /><figcaption><b>Jajcei vízesés</b></figcaption></figure>
+      <figure class="plate"><img src="img/kep2_castellammare.jpg" alt="Halászat Castellammaréban" loading="lazy" /><figcaption><b>Halászat Castellammaréban</b></figcaption></figure>
+      <figure class="plate"><img src="img/kep2_puszta.jpg" alt="Vihar a pusztán" loading="lazy" /><figcaption><b>Vihar a pusztán</b></figcaption></figure>
+      <figure class="plate"><img src="img/kep2_mostarspring.jpg" alt="Tavasz Mosztárban" loading="lazy" /><figcaption><b>Tavasz Mosztárban</b></figcaption></figure>
+    </div>
+    <p class="small">Stílusreferenciaként a <em>Taormina</em>, a <em>Baalbek</em> és a <em>Selmecbánya</em> képet is használtuk. Minden kép közkincs.</p>
+  </article>
+</section>
+
+<!-- ======================================================================= XII -->
+<section class="chapter" data-pose='{"pos":[-258,7,-150],"look":[-305,4,-112],"fov":52,"sway":1}' data-look='{"scan":0,"lamps":1}'>
+  <article class="label">
+    <p class="num">XII. fejezet</p>
+    <h2>Fény, ami fény</h2>
+    <p>A jajcei villanylámpák, a tóparti lámpasor, a csónakok lámpásai és a villanytelep ablakai nem fedő festékkel készülnek, hanem összeadódó vonásokkal: forró mag, nyolc szabálytalan, lassan lélegző sugár és puha gyűrű, ahogy Csontváry a villanyfényeit festette. A legközelebbi tizenkét lámpa a környező falakat, fákat és állatokat is melegre színezi.</p>
+    <div class="switches"><button class="switch" data-toggle="lamps" aria-pressed="true">Lámpák</button></div>
+    <figure class="plate"><img src="img/kep2_jajcetrees.jpg" alt="Villanyvilágított fák Jajcéban" loading="lazy" style="max-width:300px" /><figcaption><b>Villanyvilágított fák Jajcéban</b> (1903)</figcaption></figure>
+  </article>
+</section>
+
+<!-- ======================================================================= XIII -->
+<section class="chapter" data-pose='{"pos":[18,5,16],"look":[2,1.4,6],"fov":55,"sway":0.8}' data-look='{"scan":0}'>
+  <article class="label">
+    <p class="num">XIII. fejezet</p>
+    <h2>A játék: napút</h2>
+    <p>Lovas szekérrel járod a tájat: <kbd>W</kbd> gyí, <kbd>S</kbd> hó, <kbd>A</kbd>/<kbd>D</kbd> kormány, <kbd>Szóköz</kbd> ostor (egy rövid vágta). A feladat: negyven napfénycseppet kell felvinni a Kilenclyukú hídra. Minden leadás visszaszorítja a vihart, és amikor mind megvan, a vihar elvonul. Ez Csontváry „napút”-ja.</p>
+    <ul>
+      <li><b>Útvonaltervező:</b> a listából kiválasztott helyhez az utakon vezet. A folyón csak hídon át visz, fél másodpercenként újratervez, és a minitérkép arany pontsorral mutatja az utat.</li>
+      <li><b>Kezelőfelület:</b> festett minitérkép aranykeretben, helyszínlista (<kbd>Tab</kbd> vagy kattintás) és helyi ranglista.</li>
+      <li><b>Hangok:</b> mind kódból szintetizáltak. Szél, paták (a hídon kopogósabbak), kerékzörgés, ostorcsattanás, mennydörgés és gulyabőgés.</li>
+    </ul>
+  </article>
+</section>
+
+<!-- ======================================================================= XIV -->
+<section class="chapter" data-pose='{"pos":[30,6,18],"look":[-20,0,-40],"fov":55,"sway":2.5}' data-look='{"scan":0}'>
+  <article class="label">
+    <p class="num">XIV. fejezet</p>
+    <h2>Nyugodt festék</h2>
+    <p>Egy festői motor legnagyobb ellensége a „mászó” festék: ha a kamera mozgására a vonások maguktól remegnek, az nem festmény, hanem zaj. Ezért mérjük. A világot megállítjuk, a kamerát apró lépésekben előre visszük, és megnézzük, mennyit változik a kép képpontonként.</p>
+    <table>
+      <thead><tr><th>Kamera elmozdulása</th><th class="num-c">Változás (0–255)</th></tr></thead>
+      <tbody>
+        <tr><td>0 (álló kép)</td><td class="num-c">0,00</td></tr>
+        <tr><td>0,5 cm</td><td class="num-c">0,19</td></tr>
+        <tr><td>2 cm</td><td class="num-c">0,60</td></tr>
+        <tr><td>8 cm</td><td class="num-c">1,96</td></tr>
+      </tbody>
+    </table>
+    <p>A változás a mozgással együtt nő, tehát a festék nem remeg magától. Az olajszűrő ráadásul nyugtat: 2 cm-es lépésnél kikapcsolva 0,65, bekapcsolva 0,60, erősebb fokozaton 0,54.</p>
+    <p class="small">Eszközök: <code>tools/steady.mjs</code> (remegésmérő) és <code>tools/shot.mjs</code> (elszigetelt képernyőképek kézzel léptetett képkockákkal).</p>
+  </article>
+</section>
+
+<!-- ======================================================================= XV -->
+<section class="chapter" data-pose='{"pos":[-262.6,2.2,-30.2],"look":[-330,13,-50],"fov":55,"sway":0.5}' data-look='{"scan":0,"hatch":1,"matte":1}'>
+  <article class="label wide">
+    <p class="num">XV. fejezet</p>
+    <h2>Vonalkák és matt festék</h2>
+    <p>A <em>Vihar</em> ege és pusztája nedvesen egymásba dolgozott, sima festék. Ami viszont kiemelkedik a síkból, azt Csontváry másképp festette: a <em>Magányos cédrus</em> dombjait és a mostari hegyet rövid, vékony, párhuzamos vonalkákból rakta össze, amelyek a formát követik.</p>
+    <ul>
+      <li><b>A vonalkák iránya a forma.</b> A cédrus dombján és a kunhalmokon körbefutnak, mint a szintvonalak. A mostari hegyen ferdén futnak le, ahogy a gerinc esik. A szurdok szikláin vízszintes sorokban állnak.</li>
+      <li><b>Finom tónuskülönbség.</b> Minden vonalka egy árnyalattal világosabb vagy sötétebb, melegebb vagy hidegebb a szomszédjánál, ettől a felület enyhén vibrál. Az okkeren néha sötét vonás ül, a sötét földben tiszta vörös és zöld pötty.</li>
+      <li><b>Az átmenet nem keverék.</b> A hegy árnyékos indigója és napos lazacszíne között nincs sima színátmenet: a két szín egész vonalkái váltják egymást, ahogy a vásznon.</li>
+      <li><b>Matt felület.</b> Csontváry nem lakkozta a képeit, és az 1964-es, 1967-es vizsgálat szerint az olajfestéket többször temperával keverte, hogy a szín „tiszta, olajmentes, pasztellesen világító” legyen. Ezért a játék képén nincs lakkos mélység: a sötétek kicsit krétásak, a színek tiszták.</li>
+    </ul>
+    <div class="switches">
+      <button class="switch" data-toggle="hatch" aria-pressed="true">Vonalkák</button>
+      <button class="switch" data-toggle="matte" aria-pressed="true">Matt felület</button>
+      <button class="switch" data-toggle="townshadow" aria-pressed="true">Mostari árnyék</button>
+    </div>
+    <p class="hint">Kapcsold ki a vonalkákat: a hegy és a szurdok fala sima, számítógépes lejtő lesz.</p>
+    <p><b>Minden képnek a saját fénye.</b> A <em>Viharon</em> nincs vetett árnyék, a napos Mostarban viszont éles, lilás-kék árnyék fekszik a köveken, ezért a városban a játék is így fest. A cédrus dombjához közeledve az ég fokozatosan a <em>Magányos cédrus</em> smaragd-türkiz egére vált, citromsárga felhőkkel.</p>
+    <p><b>A modellek a festményről vannak kimérve.</b> A Kilenclyukú híd arányait a szkennelésen képpontra mértük, és a festő szemén át vetítettük vissza: az ívek keskenyek és magasak, a pillér az ívköz negyede, előtte sötét, mohás tömb áll hegyes sapkával, amely a víznél feketébe megy át. A cédrus koronája egyetlen széles, lapos tűlevél-lap, a fa körül a <em>Zarándoklás</em> fehér ruhás női táncolnak kézen fogva.</p>
+    <div class="plates two">
+      <figure class="plate"><img src="img/reszlet_cedar_vonalkak.jpg" alt="A magányos cédrus részlete: a vonalkákból rakott hegy" loading="lazy" /><figcaption><b>A magányos cédrus</b>, részlet: a hegy íves vonalkákból áll, a színe sávonként változik.</figcaption></figure>
+      <figure class="plate"><img src="img/reszlet_mostar_hegy.jpg" alt="Római híd Mosztárban részlete: a hegy" loading="lazy" /><figcaption><b>Római híd Mosztárban</b>, részlet: indigó és lazacszín ferde vonalkái egymás között.</figcaption></figure>
+    </div>
+  </article>
+</section>
+
+<!-- ======================================================================= XVI -->
+<section class="chapter" data-pose='{"pos":[0,3.2,0],"look":[0,-0.41,-50],"fov":40,"sway":0.6}' data-look='{"scan":0,"clear":1}'>
+  <article class="label">
+    <p class="num">XVI. fejezet</p>
+    <h2>Források</h2>
+    <ul class="small">
+      <li>Csontváry Kosztka Tivadar festményei: közkincs, Wikimedia Commons.</li>
+      <li>Szépművészeti Múzeum, <em>Csontváry 170</em> (2023): videók és kerekasztal-beszélgetés (Szűcs György, Gergely Mariann, Bellák Gábor, Gerlóczy Gábor, Puntigán József, Molnos Péter).</li>
+      <li>MEK 21227: Csontváry-tanulmány, a <em>Vihar</em> fejezet (értelmezés, nem tény).</li>
+      <li>MEK 01314: <em>A magányos cédrus</em> elemzése (Romváry Ferenc, Németh Lajos és Major Jenő nyomán): a vonalkás ecsetkezelés, a törtszínek és az „esti pirkadat” fénye.</li>
+      <li>Csontváry anyaghasználata (csontvary.com): az 1964-es és 1967-es vizsgálat (tempera az olajban, lakk nélkül) és a 2009-es pécsi XRF-mérés ismertetése. A textilfestékekről szóló rész a szerző saját, vitatott feltevése, erre a játék nem épít.</li>
+      <li>„Oil paint”, blendi / Patch: MIT licenc. Az ecsetlap, a festékfoltok, a három keverék, a fény, a fehérek kifutása és a remegésmérő ötlete innen jön.</li>
+      <li>Starry Nightrider (ebbyamir): az eredeti ötlet.</li>
+      <li>Állatmodellek: Quaternius, CC0. Motor: three.js r187, MIT.</li>
+    </ul>
+  </article>
+</section>
+
+</main>
+
+<footer>
+  <a class="cta" href="jatek/">Lépj be a festménybe</a>
+</footer>
+
+<script type="module" src="js/site.js"></script>
+</body>
+</html>

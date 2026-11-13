@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="color-scheme" content="dark" />
+<title>HUD próba — Élő festmény</title>
+<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/hud2.css" />
+<style>
+  /* the demo only: the painting stands in for the 3D scene */
+  #backdrop { position: fixed; inset: 0; background: #0d0c0b url(assets/painting-s.jpg) center 62% / cover no-repeat; }
+  #backdrop::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.25)); }
+  #demo-info { position: absolute; left: 18px; bottom: 16px; font-size: 13px; color: var(--muted); font-style: italic; max-width: 40vw; }
+  @media (max-width: 640px) { #demo-info { display: none; } }
+</style>
+</head>
+<body>
+<div id="backdrop"></div>
+
+<!-- the game's own HUD (copied from index.html) so the new pieces can be judged next to it -->
+<div id="hud">
+  <div id="score">
+    <div id="drops"><span class="glyph">✦</span><span id="drop-count">3</span><small>a szekéren</small></div>
+    <div id="bank"><span id="bank-count">4</span> a hídon</div>
+  </div>
+  <div id="guide"><span id="guide-arrow">↑</span><span id="guide-label">Kilenclyukú híd</span><span id="guide-dist"></span></div>
+  <div id="speed">ügetés</div>
+  <div id="corner">
+    <button id="btn-sound" type="button" title="Hang (M)">♪</button>
+    <button id="btn-gallery" type="button" title="Napút (B)">▢</button>
+  </div>
+  <div id="demo-info">HUD próba: <kbd>Tab</kbd> következő hely · <kbd>B</kbd> napút · <kbd>+</kbd><kbd>−</kbd> nagyítás · <kbd>P</kbd> megállít</div>
+</div>
+
+<script type="module">
+import { Minimap } from './src/minimap.js';
+import { Highlights, formatDistance, bearing } from './src/highlights.js';
+import { Board, STORAGE_KEY, loadEntries } from './src/board.js';
+
+// ---------------------------------------------------------------- mock world (the same shapes as world.js)
+const RIVER = [
+  [1300, -400, 12], [1050, -360, 12], [850, -330, 12], [640, -262, 12], [460, -230, 13], [330, -190, 14], [220, -132, 15],
+  [130, -108, 18], [82, -85, 26], [53, -64, 40], [32.7, -49.7, 47], [12, -26, 14], [-15, -19, 9.5], [-50, -22, 11],
+  [-110, -35, 14], [-200, -30, 14], [-320, -55, 14], [-480, -40, 13], [-650, -80, 12], [-900, -60, 12], [-1300, -110, 12],
+];
+const BW = [-15, -116], BE = [80, 17];
+const ROADS = [
+  [BW, [-40, -150], [-120, -200], [-300, -240], [-600, -262], [-900, -300], [-1300, -300]],
+  [BE, [110, 40], [200, 70], [400, 82], [700, 62], [1300, 90]],
+  [[-80, 14], [-20, 11], [20, 10], [55, 15], [84, 21]],
+  [[200, 70], [215, 180], [240, 300]],
+  [[-120, -200], [-140, -360], [-160, -520]],
+  [BW, [60, -250], [180, -380], [300, -500]],
+  [[-80, 14], [-250, 30], [-420, 46], [-600, 30], [-900, 60]],
+  [[400, 82], [520, -40], [560, -110]],
+  [[700, 62], [700, 250]],
+  [[-600, -262], [-650, -420]],
+];
+const LANDMARKS = [
+  { id: 'hid', name: 'Kilenclyukú híd', sub: 'CÉL', x: 32.7, z: -49.7, icon: 'bridge' },
+  { id: 'csarda', name: 'Hortobágyi csárda', sub: 'CSÁRDA', x: 112, z: 58, icon: 'inn' },
+  { id: 'vasar', name: 'Hídi vásár', sub: 'VÁSÁR', x: -72, z: -150, icon: 'fair' },
+  { id: 'kut', name: 'Gémeskút', sub: 'KÚT', x: -150, z: 26, icon: 'well' },
+  { id: 'gulya', name: 'Szürke gulya', sub: 'LEGELŐ', x: 160, z: 150, icon: 'herd' },
+  { id: 'tanya', name: 'Kadarcsi tanya', sub: 'TANYA', x: 252, z: 296, icon: 'farm' },
+  { id: 'cedrus', name: 'A magányos cédrus', sub: 'KILÁTÓ', x: 300, z: -500, icon: 'tree' },
+  { id: 'taormina', name: 'Taorminai romok', sub: 'ROMOK', x: 560, z: -120, icon: 'ruin' },
+  { id: 'mostar', name: 'Mostari híd', sub: 'VÁROS', x: -650, z: -430, icon: 'town' },
+];
+const MAP = {
+  bounds: { cx: 0, cz: -60, r: 1000 },
+  river: RIVER,
+  lakes: [{ x: 330, z: -330, rx: 62, rz: 38 }, { x: -380, z: 260, rx: 34, rz: 22 }],
+  roads: ROADS,
+  bridges: [{ x1: BW[0], z1: BW[1], x2: BE[0], z2: BE[1], width: 9 }],
+  hills: [{ x: -260, z: -430, r: 120 }, { x: 430, z: -520, r: 150 }, { x: -520, z: 210, r: 110 }, { x: 90, z: 330, r: 90 }, { x: 640, z: -220, r: 80 }],
+  landmarks: LANDMARKS,
+};
+
+// drops scattered around the middle (deterministic)
+let seed = 7;
+const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+const DROPS = [];
+for (let i = 0; i < 40; i++) DROPS.push({ x: (rnd() - 0.5) * 700, z: (rnd() - 0.5) * 600 - 20 });
+
+// the cart's path: along the near road, over the bridge, round by the farm and back
+const PATH = [[-150, 20], [-80, 14], [-20, 11], [55, 15], [84, 21], [80, 17], [32, -50], [-15, -116], [-40, -150], [-120, -200],
+  [-140, -300], [-60, -280], [60, -250], [120, -150], [200, 70], [215, 180], [240, 300], [140, 320], [40, 200], [-60, 80], [-150, 20]];
+const SEG = [];
+let total = 0;
+for (let i = 0; i < PATH.length - 1; i++) {
+  const [ax, az] = PATH[i], [bx, bz] = PATH[i + 1], len = Math.hypot(bx - ax, bz - az);
+  SEG.push({ ax, az, bx, bz, len, s: total }); total += len;
+}
+const SPEED = 14;   // m/s
+function at(t) {
+  let s = (t * SPEED) % total;
+  const g = SEG.find((g) => s < g.s + g.len) || SEG[SEG.length - 1];
+  const f = (s - g.s) / g.len, dx = g.bx - g.ax, dz = g.bz - g.az;
+  return { x: g.ax + dx * f, z: g.az + dz * f, yaw: Math.atan2(-dx, -dz) };
+}
+
+// ---------------------------------------------------------------- seed a few board entries (demo only)
+try {
+  if (!localStorage.getItem(STORAGE_KEY)) {
+    const names = ['Csontváry', 'Pásztor Jani', 'Kata', 'Csikós Bence', 'Juhász Ildi', 'Gulyás', 'Vándor', 'Mostari', 'Lili', 'Bori', 'Feri bácsi'];
+    const list = names.map((name, i) => ({ name, delivered: Math.max(1, 12 - Math.floor(i * 1.1)), total: 12, timeSec: 240 + i * 23 + (i % 3) * 41, at: 1700000000000 + i }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  }
+} catch { /* no storage: the board copes */ }
+
+// ---------------------------------------------------------------- the modules
+const hud = document.getElementById('hud');
+const q = new URLSearchParams(location.search);
+const mm = new Minimap(hud, MAP);
+const hl = new Highlights(hud, LANDMARKS);
+const log = { again: 0, close: 0, gameKeys: [] };
+const board = new Board(document.body, {
+  onAgain: () => { log.again++; t = 0; paused = false; },
+  onClose: () => { log.close++; paused = false; },
+});
+if (q.has('zoom')) mm.zoom = +q.get('zoom');
+
+// a stand-in for the game's key handler (window, bubble phase — like main.js): it must not see keys meant for the board
+window.addEventListener('keydown', (e) => {
+  log.gameKeys.push(e.code);
+  if (e.code === 'Tab') { e.preventDefault(); hl.next(); tick(); }
+  else if (e.code === 'KeyB') openBoard();
+  else if (e.code === 'KeyP') paused = !paused;
+  else if (e.key === '+' || e.code === 'NumpadAdd' || e.code === 'Equal') { mm.zoom = Math.min(3, mm.zoom * 1.25); tick(); }
+  else if (e.key === '-' || e.code === 'NumpadSubtract' || e.code === 'Minus') { mm.zoom = Math.max(0.5, mm.zoom / 1.25); tick(); }
+});
+document.getElementById('btn-gallery').addEventListener('click', () => board.showOnly());
+
+const drops = DROPS.slice();
+let t = +(q.get('t') || 0), paused = q.has('still'), player = at(t);
+const bank = { delivered: 7, total: 12 };
+
+function tick() {
+  player = at(t);
+  for (let i = drops.length - 1; i >= 0; i--) if (Math.hypot(drops[i].x - player.x, drops[i].z - player.z) < 9) drops.splice(i, 1);
+  const sel = hl.selected;
+  hl.update(player);
+  mm.update(player, sel ? { x: sel.x, z: sel.z } : null, drops);
+  // the existing guide pill follows the selection, as the game's would
+  if (sel) {
+    document.getElementById('guide-label').textContent = sel.name;
+    document.getElementById('guide-dist').textContent = formatDistance(Math.hypot(sel.x - player.x, sel.z - player.z));
+    const rel = bearing(sel.x - player.x, sel.z - player.z) + player.yaw;
+    document.getElementById('guide-arrow').style.transform = `rotate(${rel}rad)`;
+  }
+}
+function openBoard() { paused = true; board.show({ delivered: bank.delivered, total: bank.total, timeSec: 4 * 60 + 32.6 }); }
+
+let last = performance.now(), acc = 0;
+function loop(now) {
+  const dt = Math.min(0.1, (now - last) / 1000); last = now;
+  if (!paused) { t += dt; acc += dt; }
+  if (acc >= 0.1) { acc = 0; tick(); }
+  requestAnimationFrame(loop);
+}
+tick();
+requestAnimationFrame(loop);
+if (q.has('board')) openBoard();
+
+window.__hud = {
+  mm, hl, board, log, ready: true, loadEntries,
+  setTime(v) { t = v; tick(); return player; },
+  pause(v = true) { paused = v; },
+  openBoard,
+  get player() { return player; },
+};
+</script>
+</body>
+</html>

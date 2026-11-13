@@ -1,0 +1,15 @@
+{
+  "name": "elo-festmeny",
+  "private": true,
+  "type": "module",
+  "description": "Élő festmény: szekérrel Csontváry Vihar a Nagy Hortobágyon című festményében. three.js (r187), WebGL2, build lépés nélkül; a játék a game/ mappában.",
+  "scripts": {
+    "game": "node tools/serve.mjs --port=8096",
+    "site": "node tools/serve.mjs --port=8097 --root=site --mount=/jatek/=game",
+    "paint": "python -I tools/prepare_painting.py",
+    "shot": "node tools/shot.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1"
+  }
+}

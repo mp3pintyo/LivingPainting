@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="color-scheme" content="dark" />
+<title>Vihar a Hortobágyon</title>
+<meta name="description" content="Szekérrel Csontváry Kosztka Tivadar Vihar a Nagy Hortobágyon című festményében: gyűjtsd össze a fénycseppeket, és vidd őket a Kilenclyukú hídra." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23173a7a'/%3E%3Cpath d='M0 40h64v24H0z' fill='%2378914a'/%3E%3Cpath d='M30 40a6 6 0 0 1 12 0M44 40a6 6 0 0 1 12 0M16 40a6 6 0 0 1 12 0' fill='%23173a7a'/%3E%3Cpath d='M8 36h56v4H8z' fill='%23c08a72'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/hud2.css" />
+<script type="importmap">
+{ "imports": {
+  "three": "./vendor/three/build/three.module.js",
+  "three/addons/": "./vendor/three/addons/"
+} }
+</script>
+</head>
+<body>
+<canvas id="gl"></canvas>
+
+<!-- the gallery: the scan in its frame on the wall (drawn by the post pass), its label below -->
+<div id="gallery" hidden>
+  <div id="plaque">
+    <h1>Vihar a Nagy Hortobágyon</h1>
+    <p class="sub">Csontváry Kosztka Tivadar &middot; 1903</p>
+    <button id="enter" type="button">Lépj be a festménybe</button>
+    <p class="keys"><kbd>Enter</kbd></p>
+  </div>
+</div>
+
+<div id="hud" hidden>
+  <div id="score">
+    <div id="drops"><span class="glyph">✦</span><span id="drop-count">0</span><small>napfénycsepp a szekéren</small></div>
+    <div id="bank"><span id="bank-count">0</span> a hídon</div>
+  </div>
+  <div id="guide"><span id="guide-arrow">↑</span><span id="guide-label"></span><span id="guide-dist"></span></div>
+  <div id="speed"></div>
+  <div id="hint">
+    <span><kbd>W</kbd> gyí</span>
+    <span><kbd>S</kbd> hó, hátra</span>
+    <span><kbd>A</kbd><kbd>D</kbd> kormány</span>
+    <span><kbd>Szóköz</kbd> ostor</span>
+    <span><kbd>C</kbd> kamera</span>
+    <span><kbd>Tab</kbd> úti cél</span>
+    <span>húzd az egeret: körülnézés</span>
+    <span>görgő: közel, távol</span>
+  </div>
+  <div id="corner">
+    <button id="btn-board" type="button" title="Ranglista (L)">♛</button>
+    <button id="btn-cam" type="button" title="A kamera visszaáll a szekér mögé (K)" aria-pressed="true">⟲</button>
+    <button id="btn-sound" type="button" title="Hang (M)">♪</button>
+    <button id="btn-gallery" type="button" title="Vissza a galériába (Esc)">▢</button>
+  </div>
+  <div id="toast"></div>
+</div>
+
+<div id="loading"><div class="pulse"></div><span>keverem a festéket…</span></div>
+<div id="fatal" hidden></div>
+<div id="stats"></div>
+
+<script type="module" src="src/main.js"></script>
+</body>
+</html>

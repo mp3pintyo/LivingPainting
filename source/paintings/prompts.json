@@ -1,0 +1,12 @@
+[
+  {
+    "file": "vihar_sky_fill_gpt-image-2.6.png",
+    "date": "2026-11-11",
+    "endpoint": "openai/gpt-image-2.6/sunburst/edit",
+    "request_id": "01a1ca55-3245-77a2-be54-4905651e8161",
+    "settings": { "quality": "medium", "image_size": { "width": 2048, "height": 1040 }, "output_format": "png" },
+    "input": "game/assets/painting.jpg scaled to 2048x1042, mask: the bridge and all right of its left end, the riders above it, the well sweeps on the horizon (white = edit)",
+    "purpose": "the sky without the bridge and riders, for the dome (tools/prepare_painting.py takes only the masked sky from it)",
+    "prompt": "This is Csontváry Kosztka Tivadar's oil painting \"Storm on the Great Hortobágy\" (1903). Inside the masked area only: remove the long pink brick bridge with its arches and piers, the galloping horsemen and riders on top of it, the rider at the bridge's end, and the thin well-sweep poles standing on the horizon. In their place continue the painting's own sky down to the horizon: the warm cream, pale yellow and orange evening clearing on the right, blending smoothly into the deep ultramarine storm and the grey-mauve clouds on the left, painted with the same soft, blended oil brushwork and visible canvas texture. Below the sky, continue the flat, empty pale-green plain to a straight, level horizon at exactly the same height as the horizon on the left side, and below it the calm dark river water with its bank, with no bridge, no reflections of a bridge, no animals and no people in the masked area. Keep everything outside the mask exactly unchanged."
+  }
+]

@@ -1,0 +1,9 @@
+node_modules/
+test-results/
+playwright-report/
+# nagy referenciavideó (69 MB), nem része a kódnak
+source/livingpainting.mp4
+# a múzeumi kerekasztal átirata: harmadik fél szerzői joga alatt áll
+docs/forrasok/
+.env*
+*.log
