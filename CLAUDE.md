@@ -42,6 +42,9 @@ HUD-demó: `/hud-test.html`.
 - `fauna.js` — csordák (marha, ménes), lovasok (csikósok, zarándokok), kutya, napfénycseppek; `cart.js` — szekér, kamera.
 - `minimap.js`, `highlights.js`, `board.js` (+ `css/hud2.css`) — minitérkép, helyszínlista (Tab), helyi ranglista.
 - `audio.js` — szintetizált hangok.
+- `touch.js` — érintéses vezérlés (`body.touch`): bal oldalt lebegő joystick (fokozatos gáz és kormány), jobb oldalt
+  húzás = körülnézés, két ujj = közel/távol, ostor-gomb a minitérkép mellett. Telefonon (`max-width: 640px` vagy
+  `max-height: 520px`) a HUD összehúzódik, a helyszínlista egy sor (koppintás = következő cél).
 - Az „Oil paint” (patch.gg, MIT) nyomán: `brush.js` (ecsetlap), `animaldabs.js` (festékfoltok a legközelebbi állatokon,
   `?dabs=0` kikapcsolja), `lights.js` (összeadódó lámpafény-vonások + `uLamps`), a `paint3` három színkeverék, a lakk.
   Források, licencek: `CREDITS.md`. Remegésmérés: `node tools/steady.mjs` (alacsonyabb = nyugodtabb festék; `--at=x,y,z,lx,ly,lz` máshol mér).
@@ -51,7 +54,7 @@ HUD-demó: `/hud-test.html`.
 - **Festmény-előkészítés:** `npm run paint` (`tools/prepare_painting.py`). Forrás: Commons közkincs (`source/paintings/`).
 - **Fizetős generálás** (fal.ai): előtte költségbecslés és jóváhagyás. Kép: `openai/gpt-image-2.6/sunburst/edit`,
   **quality: medium**. Minden prompt a `source/paintings/prompts.json`-ba.
-- **Képernyőkép elszigetelten:** `node tools/shot.mjs <lépések.json>` (Playwright 1.64.1, kézzel léptetett képkockák:
+- **Képernyőkép elszigetelten:** `node tools/shot.mjs <lépések.json>` (Playwright 1.64.1, `"mobile": true` telefon érintéssel; kézzel léptetett képkockák:
   `window.__game`, `g.autoplay = true`, `g.frame(1/60)`); HUD: `node tools/hud-shot.mjs`. A felhasználó Chrome-ját nem
   zavarja. Lépésfájlok és képek: `test-results/`.
 - Új tartalom: adat a `world.js` / `fauna.js` tetején (pontlisták), ne szórványos kódban.

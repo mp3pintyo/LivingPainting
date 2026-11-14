@@ -31,6 +31,8 @@ export const ICON_PATHS = {
 };
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
+// the phone layout of hud2.css (one row only)
+const COMPACT = matchMedia('(max-width: 640px), (max-height: 520px)');
 
 /** an <svg> element with the line icon of the given type (unknown types fall back to a small star) */
 export function iconSvg(type, className = 'hl-icon') {
@@ -94,7 +96,9 @@ export class Highlights {
       row.addEventListener('click', (e) => {
         e.stopPropagation();
         const lm = this.rows.find((r) => r.el === row)?.lm;
-        if (lm) this.select(lm.id);
+        // on a small screen only one row shows: tapping the chosen one steps on to the next (as Tab does)
+        if (lm && lm === this._sel && COMPACT.matches) this.next();
+        else if (lm) this.select(lm.id);
       });
       this.rows.push({
         el: row, lm: undefined, icon: null,

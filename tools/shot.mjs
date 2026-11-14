@@ -1,6 +1,6 @@
 // Screenshots of the game in Playwright's own Chromium (isolated, does not touch the user's browser).
 //   node tools/shot.mjs <steps.json> [outDir]
-// steps.json: { "url": "/?view", "size": [1400, 790], "steps": [ { "js": "…body using g…", "frames": 30, "shot": "a.png" } ] }
+// steps.json: { "url": "/?view", "size": [1400, 790], "mobile": true (a phone: touch, coarse pointer, dpr 2), "steps": [ { "js": "…body using g…", "frames": 30, "shot": "a.png" } ] }
 // The game must be served (npm run game, port 8096). Prints page errors, shader errors and the js results.
 import { chromium } from '@playwright/test';
 import fs from 'node:fs';
@@ -11,7 +11,8 @@ const cfg = JSON.parse(fs.readFileSync(file, 'utf8'));
 fs.mkdirSync(outDir, { recursive: true });
 const browser = await chromium.launch({ args: ['--enable-gpu', '--ignore-gpu-blocklist', '--use-angle=d3d11'] });
 const [w, h] = cfg.size || [1400, 790];
-const page = await browser.newPage({ viewport: { width: w, height: h } });
+const page = await browser.newPage({ viewport: { width: w, height: h },
+  ...(cfg.mobile ? { isMobile: true, hasTouch: true, deviceScaleFactor: 2 } : {}) });
 page.on('pageerror', (e) => console.log('OLDALHIBA:', e.message));
 page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') console.log(`[${m.type()}]`, m.text().slice(0, 3000)); });
 await page.goto('http://127.0.0.1:8096' + (cfg.url || '/?view'));

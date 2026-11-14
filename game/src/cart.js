@@ -1,5 +1,6 @@
 // The cart: two horses at the pole, the driver with his whip. W: on (gyí!), S: whoa / back, A/D: steer,
-// Space: the whip — a burst of gallop. The camera follows behind; drag to look round.
+// Space: the whip — a burst of gallop. The camera follows behind; drag to look round. On a touch screen the stick
+// (touch.js) gives the same, graded.
 import * as THREE from 'three';
 import * as MD from './models.js';
 import { paintMaterial } from './paint.js';
@@ -64,12 +65,17 @@ export class Cart {
   }
 
   update(dt, input) {
-    const up = input.up, down = input.down;
-    const steerIn = (input.left ? 1 : 0) - (input.right ? 1 : 0);
+    // the touch stick (stickX, stickY in −1…1, null when untouched) is graded: how far it is pushed, how fast
+    // the horses go and how hard they turn; pushed sideways from a standstill, they set off at a walk
+    const sx = input.stickX ?? 0, sy = input.stickY ?? 0;
+    const stickOn = sy > 0.18 || (Math.abs(sx) > 0.45 && sy > -0.3);
+    const up = input.up || stickOn, down = input.down || (!stickOn && sy < -0.35);
+    const thr = input.up ? 1 : stickOn ? Math.max(0.3, Math.min(1, Math.hypot(sx, Math.max(0, sy)))) : 1;
+    const steerIn = (input.left ? 1 : 0) - (input.right ? 1 : 0) || -sx;
     if (input.whip) this.whip();
     this.boost = Math.max(0, this.boost - dt);
     this.whipT = Math.max(0, this.whipT - dt);
-    const top = this.boost > 0 ? 12.5 : 6.8;
+    const top = this.boost > 0 ? 12.5 : 6.8 * thr;
     if (up) this.speed += (this.speed < top ? (this.boost > 0 ? 4.5 : 2.4) : -2.0) * dt;
     else if (down) this.speed -= (this.speed > 0 ? 7 : 1.2) * dt;
     else this.speed *= Math.exp(-dt * (this.speed > top ? 1.2 : 0.55));
@@ -128,7 +134,7 @@ export class Cart {
       const sgn = Math.sign(along) * Math.sign(this.speed);
       const want = Math.atan2(-ax * Math.sign(along), -az * Math.sign(along));
       let dy = want - this.yaw; dy = Math.atan2(Math.sin(dy), Math.cos(dy));
-      const k = Math.min(1, dt * 3.5) * (steerIn ? 0.5 : 1);
+      const k = Math.min(1, dt * 3.5) * (Math.abs(steerIn) > 0.25 ? 0.5 : 1);
       if (this.free(this.x, this.z, this.yaw + dy * k)) this.yaw += dy * k;
       const pull = bl.z * Math.min(1, dt * 3.5 * Math.min(1, Math.abs(this.speed) / 2));
       const nx = this.x - b.s * pull, nz = this.z - b.c * pull;        // (local z runs along (s, c) in the world)

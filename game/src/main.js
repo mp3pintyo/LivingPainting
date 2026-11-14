@@ -15,6 +15,7 @@ import { Board } from './board.js';
 import { RoadGraph, lookAhead, pathLength } from './route.js';
 import { Cart, ChaseCamera } from './cart.js';
 import { Sound } from './audio.js';
+import { TouchControls } from './touch.js';
 import { BRIDGE } from './models.js';
 
 const Q = new URLSearchParams(location.search);
@@ -188,11 +189,16 @@ class Game {
   }
   framedRect() {
     const As = this.w / this.h, Ap = CANVAS.aspect;
-    let h = 0.58, w = (h * Ap) / As;
+    // the label under the frame must fit too (a phone held sideways is short): the frame gives way to it
+    const ph = $('plaque').offsetHeight || this.plaqueH || 170;
+    this.plaqueH = ph;
+    const below = (ph + this.plaqueGap() + 8) / this.h;
+    let h = Math.min(0.58, 1 - 0.05 - below), w = (h * Ap) / As;
     if (w > 0.78) { w = 0.78; h = (w * As) / Ap; }
-    const cy = 0.6;
+    const cy = Math.min(0.6, 1 - 0.05 - h / 2);
     return [0.5 - w / 2, cy - h / 2, 0.5 + w / 2, cy + h / 2];
   }
+  plaqueGap() { return this.h < 560 ? 0.03 * this.h + 10 : 0.07 * this.h; }
   setOpeningCamera() {
     const c = this.coverRect();
     this.camera.fov = c.vfov / DEG;
@@ -204,6 +210,7 @@ class Game {
 
   showGallery() {
     this.state = 'gallery'; this.t = 0;
+    this.touch?.release();
     this.setOpeningCamera();
     this.setRect(this.framedRect());
     const u = this.post.u;
@@ -214,7 +221,8 @@ class Game {
   placePlaque() {
     const r = this.framedRect();
     const p = $('plaque');
-    p.style.top = `${(1 - r[1]) * 100 + 7}%`;
+    p.style.top = `${(1 - r[1]) * this.h + this.plaqueGap()}px`;
+    if (this.state === 'gallery') this.setRect(r);
   }
   enter() {
     if (this.state !== 'gallery') return;
@@ -336,7 +344,7 @@ class Game {
   }
 
   play(dt) {
-    const inp = { ...this.input };
+    const inp = { ...this.input, stickX: this.touch?.stickX ?? null, stickY: this.touch?.stickY ?? null };
     this.input.whip = false;
     this.cart.update(dt, inp);
     this.chase.update(dt);
@@ -532,15 +540,39 @@ class Game {
       const px = e.deltaMode === 1 ? e.deltaY * 33 : e.deltaMode === 2 ? e.deltaY * 400 : e.deltaY;
       this.chase.wheel(Math.max(-300, Math.min(300, px)));
     }, { passive: false });
-    cv.addEventListener('pointerdown', (e) => { last = [e.clientX, e.clientY]; this.chase.dragging = true; cv.setPointerCapture(e.pointerId); });
+    // drag to look round; on a touch screen two fingers pinch nearer or farther
+    const pts = new Map();
+    let pinch = 0;
+    cv.addEventListener('pointerdown', (e) => {
+      pts.set(e.pointerId, [e.clientX, e.clientY]);
+      cv.setPointerCapture(e.pointerId);
+      this.chase.dragging = true;
+      if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = Math.hypot(a[0] - b[0], a[1] - b[1]); }
+      last = pts.size === 1 ? [e.clientX, e.clientY] : null;
+    });
     cv.addEventListener('pointermove', (e) => {
-      if (!last) return;
-      this.chase.orbit -= (e.clientX - last[0]) * 0.006;
+      if (!pts.has(e.pointerId)) return;
+      pts.set(e.pointerId, [e.clientX, e.clientY]);
+      if (pts.size >= 2) {
+        const [a, b] = [...pts.values()];
+        const d = Math.hypot(a[0] - b[0], a[1] - b[1]);
+        if (this.state === 'play' && pinch) this.chase.wheel(Math.max(-300, Math.min(300, (pinch - d) * 2.5)));
+        pinch = d;
+        return;
+      }
+      if (!last) { last = [e.clientX, e.clientY]; return; }
+      this.chase.orbit -= (e.clientX - last[0]) * (e.pointerType === 'touch' ? 0.009 : 0.006);
       this.chase.lift = Math.max(-2.5, Math.min(14, this.chase.lift + (e.clientY - last[1]) * 0.03));
       last = [e.clientX, e.clientY];
     });
-    const up = () => { last = null; this.chase.dragging = false; };
+    const up = (e) => {
+      pts.delete(e.pointerId);
+      pinch = 0; last = null;
+      if (!pts.size) this.chase.dragging = false;
+    };
     cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+    // the stick and the whip on a touch screen
+    this.touch = new TouchControls($('hud'), { onWhip: () => { if (this.state === 'play') this.input.whip = true; } });
   }
   /** whether the camera drifts back behind the cart after one has looked round (remembered per browser) */
   toggleCamReturn(quiet = false) {

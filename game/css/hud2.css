@@ -137,8 +137,8 @@
 .board-empty { margin: 8px 0; font-style: italic; color: var(--muted, #c9bc9f); }
 .board-actions { display: flex; justify-content: center; gap: 10px; margin-top: 18px; }
 
-/* ---- phones */
-@media (max-width: 640px) {
+/* ---- phones (upright or sideways) */
+@media (max-width: 640px), (max-height: 520px) {
   .mm { width: 150px; height: 150px; right: 10px; bottom: 12px; }
   .hl { top: 114px; right: 10px; width: min(236px, calc(100vw - 20px)); }
   .hl-head { display: none; }
@@ -159,9 +159,9 @@
   .board-table { font-size: 15px; }
   .board-table td { padding: 3px 4px; }
 }
-@media (max-height: 520px) and (min-width: 641px) {
-  .mm { width: 160px; height: 160px; }
-  .hl-item:nth-of-type(n + 5):not(.sel) { display: none; }
+@media (max-height: 520px) {
+  .mm { width: 124px; height: 124px; }
+  .hl { top: 60px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .board, .board-card { animation: none; }
