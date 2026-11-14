@@ -1,6 +1,6 @@
 # Élő festmény (LivingPainting)
 
-Szekérrel bejárható világ Csontváry Kosztka Tivadar *Vihar a Nagy Hortobágyon* (1903) című festményében.
+Szekérrel bejárható világ Csontváry Kosztka Tivadar *Vihar a nagy Hortobágyon* (1903) című festményében.
 three.js (r187), WebGL2, build lépés nélkül.
 
 **Játék:** https://mp3pintyo.github.io/LivingPainting/

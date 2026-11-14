@@ -11,7 +11,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const args = process.argv.slice(2);
-const arg = (name) => args.find((a) => a.startsWith(`--${name}=`))?.slice(name.length + 3);
+const arg = (name) => args.findLast((a) => a.startsWith(`--${name}=`))?.slice(name.length + 3);
 const PORT = +(arg('port') || 8090);
 const BASE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ROOTS = (arg('root') || 'game').split(',').map((r) => path.resolve(BASE, r));

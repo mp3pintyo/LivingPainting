@@ -1,4 +1,4 @@
-# Hogyan festett Csontváry — a *Vihar a Nagy Hortobágyon* közelről
+# Hogyan festett Csontváry — a *Vihar a nagy Hortobágyon* közelről
 
 A szkennelés (3429 × 1755 px) részleteiből, összevetve a *Tengerparti sétalovaglás* lovaival. Ezek a megfigyelések
 a játék képalkotásának szabályai.

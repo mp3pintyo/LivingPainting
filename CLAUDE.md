@@ -1,6 +1,6 @@
 # Élő festmény (LivingPainting) — projektszabályok
 
-Szekérrel bejárható világ Csontváry Kosztka Tivadar *Vihar a Nagy Hortobágyon* (1903) című festményében.
+Szekérrel bejárható világ Csontváry Kosztka Tivadar *Vihar a nagy Hortobágyon* (1903) című festményében.
 Ötlet: a starrynightrider.com (Van Gogh, three.js + procedurális világ). A mi változatunk saját kód.
 
 Bemutató oldal: `npm run site` → http://127.0.0.1:8097/ (`site/`; a játékot `/jatek/?embed` módban iframe-ben vezérli:

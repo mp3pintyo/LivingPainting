@@ -1,4 +1,4 @@
-// Élő festmény — Vihar a Nagy Hortobágyon. Boot, the gallery and the way into the painting, the game loop.
+// Élő festmény — Vihar a nagy Hortobágyon. Boot, the gallery and the way into the painting, the game loop.
 import * as THREE from 'three';
 import { applyPalette, setFactors, shared } from './paint.js';
 import { makeSky } from './sky.js';
