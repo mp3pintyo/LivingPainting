@@ -3,7 +3,7 @@
 Szekérrel bejárható világ Csontváry Kosztka Tivadar *Vihar a Nagy Hortobágyon* (1903) című festményében.
 three.js (r187), WebGL2, build lépés nélkül.
 
-**Kipróbálás:** https://mp3pintyo.github.io/LivingPainting/ (bemutató) · https://mp3pintyo.github.io/LivingPainting/jatek/ (játék)
+**Játék:** https://mp3pintyo.github.io/LivingPainting/
 
 ## Helyi futtatás
 

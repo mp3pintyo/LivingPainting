@@ -22,13 +22,11 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      # A bemutató oldal (site/) a gyökérben, a játék (game/) a /jatek/ alatt — mint az `npm run site`.
+      # A Pages a játékot mutatja (game/ a gyökérben) — mint az `npm run game`.
       - name: Oldal összeállítása
         run: |
           mkdir -p _site
-          cp -r site/. _site/
-          mkdir -p _site/jatek
-          cp -r game/. _site/jatek/
+          cp -r game/. _site/
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
